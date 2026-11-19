@@ -5,8 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
+
+
 def detect_line(img):
     """
+    the goal of this function is to detect line espcialy the frame of the computer.
     :param
     :return: x, y: int, int
     """
@@ -33,9 +36,9 @@ def detect_line(img):
     
 
     # Display result
-
     #cv2.imshow("Sobel Edge Detection", gradient_magnitude)
     #cv2.waitKey(0)
+
     gradient_magnitude = cv2.convertScaleAbs(gradient_magnitude)
     kernel_size = 5
     low_threshold = 70
@@ -49,7 +52,7 @@ def detect_line(img):
     theta = np.pi / 180  # angular resolution in radians of the Hough grid
     threshold = 15  # minimum number of votes (intersections in Hough grid cell)
     min_line_length = 50  # minimum number of pixels making up a line
-    max_line_gap = 20  # maximum gap in pixels between connectable line segments
+    max_line_gap = 15  # maximum gap in pixels between connectable line segments
     line_image = np.copy(img) * 0  # creating a blank to draw lines on
 
     # Run Hough on edge detected image
@@ -59,14 +62,15 @@ def detect_line(img):
 
     try:
         for line in lines:
-            cv2.line(img, (line[0], line[1]), (line[2], line[3]), (255, 0, 0), 3)
+            cv2.line(line_image, (line[0], line[1]), (line[2], line[3]), (255, 0, 0), 3)# draw line at the picture
 
 
         lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
         
-        return lines, pass_only_blue_color(img)
+        return lines, pass_only_blue_color(line_image)
     except:
-        return [], pass_only_blue_color(img)
+        return [], pass_only_blue_color(line_image)
+
 
 def pass_only_blue_color(img):
     image = np.copy(img)
@@ -87,7 +91,14 @@ def pass_only_blue_color(img):
 
     return mask
 
+
 def detect_intersection_of_lines(lines):
+    """
+    the goal of this function is to detect intersection of lines for detcet corner
+    but this function don't work for our system.
+    :param lines:
+    :return: 2 point
+    """
 
     def line_intersection(line1, line2):
         line11 = line1
@@ -131,11 +142,12 @@ def detect_intersection_of_lines(lines):
 
 
 
-def point_angle(img):
+def point_angle_with_interction_of_line(img):
     for p in detect_intersection_of_lines(detect_line(img)[0]):
         if p[0] != 0:
             cv2.circle(img, center=(int(p[0]), int(p[1])), radius=3, color=(0, 0, 255), thickness=4)
     return img
+
 """
 img = cv2.imread('123.png', cv2.IMREAD_GRAYSCALE)
 point_angle(img)
@@ -143,6 +155,11 @@ cv2.imshow('img', img)
 cv2.waitKey(0)
 """
 def detect_corners(img):
+    """
+    this function use function from cv to slove this problem but for our problem it iswnt work
+    :param img:
+    :return:
+    """
     import numpy as np
     import cv2 as cv
     img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -211,8 +228,11 @@ def detect_corners(img):
 
     return img
 
+
+
 def d(line):
     return np.sqrt(abs(line[0] - line[2])**2 + abs(line[1] - line[3])**2)
+
 
 
 def max_line(lines):
@@ -226,6 +246,11 @@ def max_line(lines):
 
 
 def detect_up_corner_computer(img):
+    """
+    this function draw line at the top of frame of computer and after that find the corner with the edges of the drawing.
+    :param img: list[list[lsit[int]]]
+    :return: (int,int), (int,int)
+    """
     up_edge_suspect = detect_line(img)[1]
 
     rho = 1  # distance resolution in pixels of the Hough grid
@@ -247,11 +272,13 @@ def detect_up_corner_computer(img):
         cv2.line(up_edge_suspect, (max_length_line[0], max_length_line[1]),(max_length_line[2], max_length_line[3]), (0, 255, 0), 2)
         print("x")
         print((max_length_line[3] - max_length_line[1])/(max_length_line[0]-max_length_line[2]))
-        cv2.imshow("Image", img)
-        cv2.imshow("Mask", up_edge_suspect)
+        WE_WANT_SEE_WAY = True
+        if WE_WANT_SEE_WAY:
+            cv2.imshow("Image", img)
+            cv2.imshow("Mask", up_edge_suspect)
 
-        # Make python sleep for unlimited time
-        cv2.waitKey(1)
+            # Make python sleep for unlimited time
+            cv2.waitKey(1)
 
         lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
     except:
@@ -268,42 +295,6 @@ def image_draw_corner_of_computer(img):
 
 
 
-
-
-
-def detect_down_corner_computer(img):
-    up_edge_suspect = detect_line(img)[1]
-
-    rho = 1  # distance resolution in pixels of the Hough grid
-    theta = np.pi / 180  # angular resolution in radians of the Hough grid
-    threshold = 15  # minimum number of votes (intersections in Hough grid cell)
-    min_line_length = 30  # minimum number of pixels making up a line
-    max_line_gap = 10  # maximum gap in pixels between connectable line segments
-    line_image = np.copy(img) * 0  # creating a blank to draw lines on
-
-    # Run Hough on edge detected image
-    # Output "lines" is an array containing endpoints of detected line segments
-    lines = cv2.HoughLinesP(up_edge_suspect, rho, theta, threshold, np.array([]),
-                            min_line_length, max_line_gap)
-
-
-    try:
-        max_length_line = max_line(lines)
-        print(max_length_line)
-        cv2.line(up_edge_suspect, (max_length_line[0], max_length_line[1]),(max_length_line[2], max_length_line[3]), (0, 255, 0), 2)
-        print("x")
-        print((max_length_line[3] - max_length_line[1])/(max_length_line[0]-max_length_line[2]))
-        cv2.imshow("Image", img)
-        cv2.imshow("Mask", up_edge_suspect)
-
-        # Make python sleep for unlimited time
-        cv2.waitKey(1)
-
-        lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
-    except:
-        print("y")
-
-    return (max_length_line[0], max_length_line[1]), (max_length_line[2], max_length_line[3])
 
 
 
