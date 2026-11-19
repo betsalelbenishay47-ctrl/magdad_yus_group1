@@ -7,11 +7,11 @@ from detect_angle import *
 import copy
  
 
-
-
+down_line = 50
+up_line = 20
 
 # start webcam
-cap = cv2.VideoCapture("123.mp4")
+cap = cv2.VideoCapture("6374.mp4")
 cap.set(3, 640)
 cap.set(4, 480)
 
@@ -39,9 +39,11 @@ while True:
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)  # convert to int values
 
                 # put box in cam
-                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)  # you are the hashood
+                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255),1)  # you are the hashood
+                image_draw_corner_of_computer(img[(y1 - 0):(y1 + down_line), x1:x2])
                 cv2.circle(img, center=(int((x1+x2)/2), int((y1+y2)/2)), radius=3, color=(0, 255, 0), thickness=4)
-                #point_angle(img[y1:y2, x1:x2])
+
+
 
                 # confidence
                 confidence = math.ceil((box.conf[0] * 100)) / 100
