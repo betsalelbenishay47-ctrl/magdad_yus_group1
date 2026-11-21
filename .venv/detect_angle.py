@@ -5,7 +5,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
+def detect_edges(img):
+    # Load image in grayscale
+    kernel_size = 15
+    blur_img = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
 
+    # Apply Sobel operator
+    sobelx = cv2.Sobel(blur_img, cv2.CV_64F, 1, 0, ksize=3)  # Horizontal edges
+    sobely = cv2.Sobel(blur_img, cv2.CV_64F, 0, 1, ksize=3)  # Vertical edges
+
+    # Compute gradient magnitude
+    gradient_magnitude = cv2.magnitude(sobelx, sobely)
+
+    # Convert to uint8
+    gradient_magnitude = cv2.convertScaleAbs(gradient_magnitude)
+
+    # Display result
+    # cv2.imshow("Sobel Edge Detection", gradient_magnitude)
+    # cv2.waitKey(0)
+
+    gradient_magnitude = cv2.convertScaleAbs(gradient_magnitude)
+    return gradient_magnitude
 
 def detect_line(img):
     """
