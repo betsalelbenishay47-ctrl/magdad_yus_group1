@@ -58,8 +58,6 @@ def detect_line(img):
     # Display result
     #cv2.imshow("Sobel Edge Detection", gradient_magnitude)
     #cv2.waitKey(0)
-
-    gradient_magnitude = cv2.convertScaleAbs(gradient_magnitude)
     kernel_size = 5
     low_threshold = 70
     high_threshold = 150
@@ -308,10 +306,18 @@ def detect_up_corner_computer(img):
     return (max_length_line[0], max_length_line[1]), (max_length_line[2], max_length_line[3])
 
 
-def image_draw_corner_of_computer(img):
+def image_draw_corner_of_computer(img, edge_x1=0, edge_x2=0):
     line_max = detect_up_corner_computer(img)
-    cv2.circle(img, line_max[0], radius=1, color=(0, 0, 255), thickness=3)
-    cv2.circle(img, line_max[1], radius=1, color=(0, 0, 255), thickness=3)
+    print(line_max[0][0])
+    if line_max[0][0] < edge_x1:
+        edge_x1 = line_max[0][0]
+    if line_max[1][0] > edge_x2:
+        edge_x2 = line_max[1][0]
+
+        
+    cv2.circle(img, (edge_x1,line_max[0][1]), radius=1, color=(0, 0, 255), thickness=3)
+    cv2.circle(img, (edge_x2,line_max[1][1]), radius=1, color=(0, 0, 255), thickness=3)
+    return edge_x1, edge_x2
 
 
 
