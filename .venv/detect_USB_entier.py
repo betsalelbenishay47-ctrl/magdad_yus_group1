@@ -1,9 +1,8 @@
 import cv2
 import math
-import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
-from detect_angle import *
+
 import copy
+import numpy as np
 
 def mask_black(image):
     image1 = np.copy(image)
@@ -30,7 +29,7 @@ def detect_usb_entier(image):
 
     contours, _ = cv2.findContours(gradient_magnitude, cv2.RETR_TREE,
                                    cv2.CHAIN_APPROX_SIMPLE)
-    x_min = 500
+    x_min = 0
     y_min = 500
 
     for cnt in contours:
@@ -42,7 +41,7 @@ def detect_usb_entier(image):
                                       0.009 * cv2.arcLength(cnt, True), True)
             print(approx)
             for point in approx:
-                if point[0][0] < x_min:
+                if point[0][0] > x_min:
                     x_min = point[0][0]
                     y_min = point[0][1]
                     print("x")
@@ -73,16 +72,25 @@ def distance_between_image(image1, image2):
 
 
 
-image1 = cv2.imread("0.png")
-image2 = cv2.imread("63.png")
+image1 = cv2.imread("222.png")
+image2 = cv2.imread("262.png")
 cv2.imshow("Sobel Edge Detection", image1)
-cv2.waitKey(0)
-print(distance_between_image(image1,image2))
 cv2.waitKey(0)
 
 pixel = 410
 mm = 65
-change_rate = 65/ 410
+change_rate = 6.5/ 410
 
 def distance_to_move_mm(image1, image2):
-    return change_rate * distance_between_image(image1, image2)
+    if detect_usb_entier(image2)[0] > 630:
+        print(detect_usb_entier(image2)[0])
+        return 20
+    return - change_rate * distance_between_image(image1, image2)
+
+
+def virtual_machine():
+    x = distance_to_move_mm(image1, image2[:,100:500])
+    print(x)
+    cv2.imshow("Virtual Machine", image2[:,int(100 + 0.1 * x/ change_rate) :int(500 +0.1* x/ change_rate)])
+    cv2.waitKey(0)
+virtual_machine()

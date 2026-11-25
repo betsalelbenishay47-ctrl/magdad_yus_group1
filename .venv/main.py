@@ -18,7 +18,7 @@ def detect_compuet_and_his_angle():
     up_line = 20
     # start webcam
     print("x")
-    cap = cv2.VideoCapture("120_cm_135.mp4")
+    cap = cv2.VideoCapture("120_cm_45.mp4")
     print("x")
     cap.set(3, 640)
     cap.set(4, 480)
